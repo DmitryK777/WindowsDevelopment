@@ -2,7 +2,7 @@
 #include <windows.h>
 #include <cstdio>
 
-//#include "resource.h"
+#include "resource.h"
 
 CONST CHAR* init_values[] = {"IT", "IS", "THE", "LIST", "BOX"};
 
@@ -20,7 +20,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_INITDIALOG:
 			{
-				HWND hCombo = GetDlgItem(hwnd, IDC_COMBO1);
+				HWND hCombo = GetDlgItem(hwnd, IDD_DIALOG1);
 				for (int i = 0; i < sizeof(init_values) / sizeof(init_values[0]); i++)
 				{
 					SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)init_values[i]);
@@ -32,7 +32,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				{
 					case IDOK:
 						{
-							HWND hCombo = GetDlgItem(hwnd, IDC_COMBO1);
+							HWND hCombo = GetDlgItem(hwnd, IDD_DIALOG1);
 							CONST INT SIZE = 256;
 							CHAR sz_buffer[SIZE]{};
 							CHAR sz_message[SIZE]{};
