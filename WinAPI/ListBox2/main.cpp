@@ -7,6 +7,7 @@ CONST CHAR* g_VALUES[] = { "This", "is", "my", "first", "List", "Box" };
 
 BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 BOOL CALLBACK DlgProcAddItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+BOOL CALLBACK DlgProcAlterItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -31,12 +32,28 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				}
 			}
 			break;
+
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{
+				case IDC_LIST:
+					{
+						if (HIWORD(wParam) == LBN_DBLCLK)
+						{
+							DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD_ITEM), hwnd, DlgProcAlterItem, 0);
+						}
+					}
+					break;
 				case IDC_BUTTON_ADD:
 					DialogBoxParam(GetModuleHandle(NULL), MAKEINTRESOURCE(IDD_DIALOG_ADD_ITEM), hwnd, DlgProcAddItem, 0);
 					break;
+				case IDC_BUTTON_REMOVE:
+					{
+						HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
+						INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+						SendMessage(hListBox, LB_DELETESTRING, i, 0);
+					}
+				break;
 				case IDOK: 
 					{
 						HWND hListBox = GetDlgItem(hwnd, IDC_LIST);
@@ -55,6 +72,7 @@ BOOL CALLBACK DlgProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					
 			}
 			break;
+
 		case WM_CLOSE:
 			EndDialog(hwnd, 0);
 			break;
@@ -69,12 +87,14 @@ BOOL CALLBACK DlgProcAddItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_INITDIALOG:
 			{
-		
+				SetFocus(GetDlgItem(hwnd, IDC_EDIT_ADD_ITEM));
 			}
 			break;
+
 		case WM_COMMAND:
 			switch (LOWORD(wParam))
 			{
+				
 				case IDOK:
 					{
 						CONST INT SIZE = 256;
@@ -85,16 +105,80 @@ BOOL CALLBACK DlgProcAddItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						HWND hParent = GetParent(hwnd);
 
 						HWND hListBox = GetDlgItem(hParent, IDC_LIST);
-
-						SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+						if (SendMessage(hListBox, LB_FINDSTRINGEXACT, -1, (LPARAM)sz_buffer) == LB_ERR)
+						{
+							SendMessage(hListBox, LB_ADDSTRING, 0, (LPARAM)sz_buffer);
+						}
+						else
+						{
+							INT answer = MessageBox
+							(
+								hwnd,
+								"Такое вхождение уже есть, хотите ввести что-то другое?",
+								"Question",
+								MB_YESNO | MB_ICONQUESTION
+							);
+							if (answer == IDYES) break;
+						}
 						//EndDialog(hwnd, 0);
 					}
 				//break;
 				case IDCANCEL: EndDialog(hwnd, 0); break;
 			}
 			break;
+
 		case WM_CLOSE: EndDialog(hwnd, 0); break;
 	}
 
+	return FALSE;
+}
+
+BOOL CALLBACK DlgProcAlterItem(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+	switch (uMsg)
+	{
+		case WM_INITDIALOG:
+			{
+				SendMessage(hwnd, WM_SETTEXT, 0, (LPARAM)"Изменить вхождение");
+				HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_ADD_ITEM);
+				HWND hParent = GetParent(hwnd);
+				HWND hListBox = GetDlgItem(hParent, IDC_LIST);
+				INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+				CONST INT SIZE = 256;
+				CHAR sz_buffer[SIZE]{};
+				SendMessage(hListBox, LB_GETTEXT, i, (LPARAM)sz_buffer);
+				SendMessage(hEdit, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+				SetFocus(hEdit);
+				INT length = SendMessage(hEdit, WM_GETTEXTLENGTH, 0, 0);
+				SendMessage(hEdit, EM_SETSEL, length, length);
+				
+			}
+			break;
+
+		case WM_COMMAND:
+			{
+				switch (LOWORD(wParam))
+				{
+					case IDOK:
+						{
+							HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_ADD_ITEM);
+							HWND hParent = GetParent(hwnd);
+							HWND hListBox = GetDlgItem(hParent, IDC_LIST);
+							CONST INT SIZE = 256;
+							CHAR sz_buffer[SIZE]{};
+							SendMessage(hEdit, WM_GETTEXT, SIZE, (LPARAM)sz_buffer);
+							INT i = SendMessage(hListBox, LB_GETCURSEL, 0, 0);
+							SendMessage(hListBox, LB_DELETESTRING, i, 0);
+							SendMessage(hListBox, LB_INSERTSTRING, i, (LPARAM)sz_buffer);
+						}
+						//break;
+
+					case IDCANCEL: EndDialog(hwnd, 0); break;
+				}
+			}
+			break;
+
+		case WM_CLOSE: EndDialog(hwnd, 0); break;
+	}
 	return FALSE;
 }
