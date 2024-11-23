@@ -16,9 +16,9 @@ INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, IN
 	wClass.cbClsExtra = 0;
 	wClass.cbWndExtra = 0;
 
-	wClass.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-	wClass.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
-	wClass.hCursor = LoadCursor(NULL, IDC_ARROW);
+	wClass.hIcon = LoadIcon(NULL, IDI_ASTERISK);
+	wClass.hIconSm = LoadIcon(NULL, IDI_QUESTION);
+	wClass.hCursor = LoadCursor(NULL, IDC_APPSTARTING);
 	wClass.hbrBackground = (HBRUSH)COLOR_WINDOW;
 
 	wClass.hInstance = hInstance;
