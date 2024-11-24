@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ListBox2", "ListBox2\ListBo
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MainWindow", "MainWindow\MainWindow.vcxproj", "{1B9DBBFF-754A-4E01-8DD3-12F9DC33E93D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Calc", "Calc\Calc.vcxproj", "{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{1B9DBBFF-754A-4E01-8DD3-12F9DC33E93D}.Release|x64.Build.0 = Release|x64
 		{1B9DBBFF-754A-4E01-8DD3-12F9DC33E93D}.Release|x86.ActiveCfg = Release|Win32
 		{1B9DBBFF-754A-4E01-8DD3-12F9DC33E93D}.Release|x86.Build.0 = Release|Win32
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Debug|x64.ActiveCfg = Debug|x64
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Debug|x64.Build.0 = Debug|x64
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Debug|x86.ActiveCfg = Debug|Win32
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Debug|x86.Build.0 = Debug|Win32
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Release|x64.ActiveCfg = Release|x64
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Release|x64.Build.0 = Release|x64
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Release|x86.ActiveCfg = Release|Win32
+		{27D5A247-33B6-4C07-AE5D-FEAFF1FB4AED}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
