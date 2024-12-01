@@ -1,56 +1,12 @@
-﻿#include <Windows.h>
+﻿#define _CRT_SECURE_NO_WARNINGS
+#include <Windows.h>
+//#include <string.h>
 #include "Resource.h"
-
-#define IDC_EDIT_DISPLAY     999
-
-#define IDC_BUTTON_0        1000
-#define IDC_BUTTON_1        1001
-#define IDC_BUTTON_2        1002
-#define IDC_BUTTON_3        1003
-#define IDC_BUTTON_4        1004
-#define IDC_BUTTON_5        1005
-#define IDC_BUTTON_6        1006
-#define IDC_BUTTON_7        1007
-#define IDC_BUTTON_8        1008
-#define IDC_BUTTON_9        1009
-#define IDC_BUTTON_POINT    1010
-
-#define IDC_BUTTON_PLUS     1010
-#define IDC_BUTTON_MINUS    1010
-#define IDC_BUTTON_ASTER    1010 // "*"
-#define IDC_BUTTON_SLASH    1010 // '/'
-
-#define IDC_BUTTON_BSP      1015 // BackSpace
-#define IDC_BUTTON_CLR      1016 // Clear
-#define IDC_BUTTON_EQUAL    1017 // '='
-
-
+#include "Dimensions.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
-
-CONST INT g_i_BUTTON_SIZE = 50; // Размер кнопки в пикселах
-CONST INT g_i_INTERVAL = 5;     // Расстояние между кнопками
-CONST INT g_i_BUTTON_DOUBLE_SIZE = g_i_BUTTON_SIZE * 2 + g_i_INTERVAL; // Размер большой кнопки в пикселах
-
-CONST INT g_i_SCREEN_WIDTH = g_i_BUTTON_SIZE * 5 + g_i_INTERVAL * 4;
-CONST INT g_i_SCREEN_HEIGHT = 22;
-
-CONST INT g_i_START_X = 10;     // 
-CONST INT g_i_START_Y = 10;     // 
-CONST INT g_i_BUTTON_START_X = g_i_START_X;     // 
-CONST INT g_i_BUTTON_START_Y = g_i_START_Y + g_i_SCREEN_HEIGHT + g_i_INTERVAL;     // 
-
-#define BUTTON_SHIFT_X(column) g_i_BUTTON_START_X + (g_i_BUTTON_SIZE + g_i_INTERVAL) *(column)
-#define BUTTON_SHIFT_Y(row) g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) *(row)
-
-
-CONST INT g_i_WINDOW_WIDTH = g_i_SCREEN_WIDTH + g_i_START_X *2 + 8 + 8;
-CONST INT g_i_WINDOW_HEIGHT = 43 + g_i_START_X + g_i_SCREEN_HEIGHT + g_i_BUTTON_SIZE * 4 + g_i_INTERVAL * 5;
-
-
 CONST CHAR* g_OPERATIONS[] = { "+", "-", "*", "/" };
-
 
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -59,6 +15,7 @@ INT GetTitleBarHeight(HWND hwnd);
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
 	// 1) Регистация класса окна
+
 	WNDCLASSEX wClass;
 	ZeroMemory(&wClass, sizeof(wClass));
 
@@ -155,7 +112,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							g_i_BUTTON_START_Y + (g_i_BUTTON_SIZE + g_i_INTERVAL) * (2 - i/3),
 							g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 							hwnd,
-							(HMENU)IDC_BUTTON_1 + (i + j),
+							(HMENU)(IDC_BUTTON_1 + i + j),
 							GetModuleHandle(NULL),
 							NULL
 						);
@@ -242,7 +199,27 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		case WM_COMMAND:
 			{
+				HWND hEditDisplay = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+				CONST INT SIZE = 256;
+				CHAR sz_display[MAX_PATH]{};
+				CHAR sz_digit[2]{};
 
+				if (LOWORD(wParam) >= IDC_BUTTON_0 && LOWORD(wParam) <= IDC_BUTTON_9)
+				{
+					sz_digit[0] = LOWORD(wParam) - IDC_BUTTON_0 + '0';
+					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+					if (strlen(sz_display) == 1 && sz_display[0] == '0') sz_display[0] = sz_digit[0];
+					else strcat(sz_display, sz_digit);
+					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				}
+
+				if (LOWORD(wParam) == IDC_BUTTON_POINT)
+				{
+					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+					if(strchr(sz_display, '.')) break;
+					strcat(sz_display, ".");
+					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				}
 			}
 			break;
 	
