@@ -19,10 +19,10 @@
 #define IDC_BUTTON_9        1009
 #define IDC_BUTTON_POINT    1010
 
-#define IDC_BUTTON_PLUS     1010
-#define IDC_BUTTON_MINUS    1010
-#define IDC_BUTTON_ASTER    1010 // "*"
-#define IDC_BUTTON_SLASH    1010 // '/'
+#define IDC_BUTTON_PLUS     1011
+#define IDC_BUTTON_MINUS    1012
+#define IDC_BUTTON_ASTER    1013 // "*"
+#define IDC_BUTTON_SLASH    1014 // '/'
 
 #define IDC_BUTTON_BSP      1015 // BackSpace
 #define IDC_BUTTON_CLR      1016 // Clear
