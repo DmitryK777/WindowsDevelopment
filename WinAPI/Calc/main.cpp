@@ -1,6 +1,13 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
 #include <Windows.h>
+#include <cmath>
+#include <stdio.h>
+#include <cstdio>
+#include <string>
+#include <string.h>
 //#include <string.h>
+#include <iostream>
+#include <sstream>
 #include "Resource.h"
 #include "Dimensions.h"
 
@@ -8,9 +15,12 @@ CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
 CONST CHAR* g_OPERATIONS[] = { "+", "-", "*", "/" };
 
-INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+DOUBLE first_number = 0;
+DOUBLE second_number = 0;
+INT operation = 0;
 
-INT GetTitleBarHeight(HWND hwnd);
+
+INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -133,7 +143,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 				CreateWindowEx
 				(
-					NULL, "Button", ",",
+					NULL, "Button", ".",
 					WS_CHILD | WS_VISIBLE,
 					BUTTON_SHIFT_X(2), BUTTON_SHIFT_Y(3),
 					g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
@@ -152,7 +162,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						BUTTON_SHIFT_X(3), BUTTON_SHIFT_Y(3-i),
 						g_i_BUTTON_SIZE, g_i_BUTTON_SIZE,
 						hwnd,
-						(HMENU)IDC_BUTTON_PLUS + i,
+						HMENU(IDC_BUTTON_PLUS + i),
 						GetModuleHandle(NULL),
 						NULL
 					);
@@ -215,8 +225,17 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 				if (LOWORD(wParam) == IDC_BUTTON_POINT)
 				{
+					CHAR* sz_buffer;
 					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
-					if(strchr(sz_display, '.')) break;
+					sz_buffer = strchr(sz_display, ' ');
+					if (sz_buffer)
+					{
+						if (strchr(sz_display, '.') && strchr(sz_buffer, '.')) break;
+					}
+					else
+					{
+						if (strchr(sz_display, '.')) break;
+					}
 					strcat(sz_display, ".");
 					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 				}
@@ -238,7 +257,81 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 				if (LOWORD(wParam) == IDC_BUTTON_CLR)
 				{
 					sz_digit[0] = '0';
-					strcat(sz_display, sz_digit);
+					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_digit);
+				}
+
+				
+
+				if (LOWORD(wParam) >= IDC_BUTTON_PLUS && LOWORD(wParam) <= IDC_BUTTON_SLASH)
+				{
+					operation = LOWORD(wParam);
+					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+					first_number = atof(sz_display);
+
+					CHAR sz_buffer[MAX_PATH]{};
+					for (int i = 0; i < sizeof(g_OPERATIONS) / sizeof(g_OPERATIONS[0]); i++)
+					{
+						if (i == operation - IDC_BUTTON_0 - 11)
+						{
+							strcat(sz_display, " ");
+							strcat(sz_display, g_OPERATIONS[i]);
+							//strcat(sz_buffer, g_OPERATIONS[i]);
+							strcat(sz_display, " ");
+							strcat(sz_display, sz_buffer);
+							SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+						}
+							
+					}
+				}
+
+				if (LOWORD(wParam) == IDC_BUTTON_EQUAL)
+				{
+					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+					
+					CHAR* sz_buffer;
+					CHAR sz_result[MAX_PATH];
+
+					DOUBLE result;
+
+					switch (operation)
+						{
+							case IDC_BUTTON_PLUS:
+								{
+									sz_buffer = strchr(sz_display, '+');
+									second_number = atof(++sz_buffer);
+									result = first_number + second_number;
+								}
+								break;
+
+							case IDC_BUTTON_MINUS:
+								{
+									sz_buffer = strchr(sz_display, '-');
+									second_number = atof(++sz_buffer);
+									result = first_number - second_number;
+								}
+								break;
+
+							case IDC_BUTTON_ASTER:
+								{
+									sz_buffer = strchr(sz_display, '*');
+									second_number = atof(++sz_buffer);
+									result = first_number * second_number;
+								}
+								break;
+
+							case IDC_BUTTON_SLASH:
+								{
+									sz_buffer = strchr(sz_display, '/');
+									second_number = atof(++sz_buffer);
+									if (second_number != 0) result = first_number / second_number;
+									else result = 0;
+								}
+								break;
+						}
+					if (result == (int)result) sprintf(sz_result, "%i", (int)result);
+					else sprintf(sz_result, "%.5f", result);
+					strcat(sz_display, " = ");
+					strcat(sz_display, sz_result);
 					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 				}
 			}
