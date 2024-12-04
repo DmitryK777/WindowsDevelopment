@@ -117,19 +117,19 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 							NULL
 						);
 					}
-
-					CreateWindowEx
-					(
-						NULL, "Button", "0",
-						WS_CHILD | WS_VISIBLE,
-						BUTTON_SHIFT_X(0), BUTTON_SHIFT_Y(3),
-						g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE,
-						hwnd,
-						(HMENU)IDC_BUTTON_0,
-						GetModuleHandle(NULL),
-						NULL
-					);
 				}
+
+				CreateWindowEx
+				(
+					NULL, "Button", "0",
+					WS_CHILD | WS_VISIBLE,
+					BUTTON_SHIFT_X(0), BUTTON_SHIFT_Y(3),
+					g_i_BUTTON_DOUBLE_SIZE, g_i_BUTTON_SIZE,
+					hwnd,
+					(HMENU)IDC_BUTTON_0,
+					GetModuleHandle(NULL),
+					NULL
+				);
 
 				CreateWindowEx
 				(
@@ -218,6 +218,27 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
 					if(strchr(sz_display, '.')) break;
 					strcat(sz_display, ".");
+					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
+				}
+
+				if (LOWORD(wParam) == IDC_BUTTON_BSP)
+				{
+					SendMessage(hEditDisplay, WM_GETTEXT, SIZE, (LPARAM)sz_display);
+					INT display_length = strlen(sz_display);
+					CHAR sz_buffer[MAX_PATH]{};
+					if (display_length > 1)
+					{
+						display_length--;
+						for (int i = 0; i < display_length; i++) sz_buffer[i] = sz_display[i];
+					}
+					else sz_buffer[0] = '0';
+					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_buffer);
+				}
+
+				if (LOWORD(wParam) == IDC_BUTTON_CLR)
+				{
+					sz_digit[0] = '0';
+					strcat(sz_display, sz_digit);
 					SendMessage(hEditDisplay, WM_SETTEXT, 0, (LPARAM)sz_display);
 				}
 			}
