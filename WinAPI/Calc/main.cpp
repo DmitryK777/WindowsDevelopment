@@ -13,6 +13,7 @@ CONST CHAR* g_OPERATIONS[] = { "+", "-", "*", "/" };
 
 static CONST CHAR* theme;
 
+
 INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
@@ -91,8 +92,9 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 	{
 		case WM_CREATE:
 			{
-				SetSkin(hwnd, "square_blue");
-				//SetSkin(hwnd, "metal_mistral");
+				//SetSkin(hwnd, "square_blue");
+				SetSkin(hwnd, "metal_mistral");
+
 				CONST INT SIZE = 256;
 				CHAR path[SIZE]{};
 
