@@ -8,7 +8,10 @@
 #define IDR_SQUARE_BLUE      201
 #define IDR_METAL_MISTRAL    202
 
-#define IDR_EXIT       299
+#define IDR_AZONIX           251
+#define IDR_MOSCOW2024       252
+
+#define IDR_EXIT             299
 
 #define IDC_EDIT_DISPLAY     999
 
