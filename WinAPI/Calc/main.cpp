@@ -18,6 +18,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 INT GetTitleBarHeight(HWND hwnd);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -237,7 +238,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			NULL
 		);
 
-		SetSkin(hwnd, "square_blue");
+		SetSkinFromDLL(hwnd, "square_blue.dll");
 	}
 	break;
 
@@ -509,7 +510,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			HDC hdcDisplay = GetDC(hEditDisplay);
 			SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
 			ReleaseDC(hEditDisplay, hdcDisplay);
-			SetSkin(hwnd, g_SKIN[index]);
+			SetSkinFromDLL(hwnd, g_SKIN[index]);
 			SetFocus(hEditDisplay);
 
 
@@ -573,10 +574,31 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[])
 			NULL,
 			sz_filename,
 			IMAGE_BITMAP,
-			i == IDC_BUTTON_0 ? g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
-			i == IDC_BUTTON_EQUAL ? g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_0		 ? g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_EQUAL	 ? g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
 			LR_LOADFROMFILE
 		);
 		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton);
 	}
+}
+
+VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[])
+{
+	HMODULE hModule = LoadLibrary(skin);
+	for (int i = IDC_BUTTON_0; i <= IDC_BUTTON_EQUAL; i++)
+	{
+		HWND hButton = GetDlgItem(hwnd, i);
+		HBITMAP bmpButton = (HBITMAP)LoadImage
+		(
+			hModule,
+			MAKEINTRESOURCE(i),
+			IMAGE_BITMAP,
+			i == IDC_BUTTON_0		?  g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
+			i == IDC_BUTTON_EQUAL	?  g_i_BUTTON_DOUBLE_SIZE : g_i_BUTTON_SIZE,
+			LR_SHARED // NULL тоже работает
+		);
+		SendMessage(hButton, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton); // IMAGE_BITMAP можно не указывать и оставит 0
+	}
+
+	FreeLibrary(hModule);
 }
