@@ -6,6 +6,7 @@
 #include "Resource.h"
 #include "Dimensions.h"
 #include "Skins.h"
+#include "Fonts.h"
 
 CONST CHAR g_sz_WINDOW_CLASS[] = "Calc_VPD_311";
 
@@ -19,6 +20,8 @@ INT GetTitleBarHeight(HWND hwnd);
 
 VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
+VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
+VOID LoadFontsFromDLL(HMODULE hFontsModule);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -112,14 +115,19 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		
 		
 		hFontsModule = LoadLibrary("Fonts.dll");
+
+		/*
 		HRSRC hFntRes = FindResource(hFontsModule, MAKEINTRESOURCE(2003), MAKEINTRESOURCE(RT_FONT));
 		HGLOBAL hFntMem = LoadResource(hFontsModule, hFntRes);
 		VOID* fntData = LockResource(hFntMem);
 		DWORD nFonts = 0;
 		DWORD len = SizeofResource(hFontsModule, hFntRes);
 		AddFontMemResourceEx(fntData, len, NULL, &nFonts);
-
+		*/
 		//AddFontResource("Fonts\\MOSCOW2024.otf");
+
+		LoadFontsFromDLL(hFontsModule);
+
 		HFONT hFont = CreateFont
 		(
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
@@ -130,7 +138,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CLIP_CHARACTER_PRECIS,
 			ANTIALIASED_QUALITY,
 			FF_DONTCARE,
-			"MOSCOW2024"
+			g_FONT_NAMES[4]
 		);
 		
 
@@ -498,13 +506,26 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		{
 			// 1) создаём всплывающее меню
 			HMENU hMenu = CreatePopupMenu(); 
+			HMENU hMenuSkins = CreatePopupMenu();
+			HMENU hMenuFonts = CreatePopupMenu();
 
 			// 2) добавляем пункты в меню
+			InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_TERMINATOR, "Terminator Two"); 
+			InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_MOSCOW2024, "MOSCOW2024");
+			InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_DS_DIGITAL, "DS-Didital");
+			InsertMenu(hMenuFonts, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_DIGITAL_7, "Didital-7");
+
+			InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_METAL_MISTRAL, "Metal mistral");
+			InsertMenu(hMenuSkins, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_SQUARE_BLUE, "Square blue");
+			
 			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, IDR_EXIT, "Exit");
 			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_SEPARATOR, 0, NULL);
-			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_METAL_MISTRAL, "Metal mistral");
-			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_STRING | MF_UNCHECKED, IDR_SQUARE_BLUE, "Square blue");
-			CheckMenuItem(hMenu, index, MF_BYPOSITION | MF_CHECKED);
+
+			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hMenuFonts, "Fonts");
+			InsertMenu(hMenu, 0, MF_BYPOSITION | MF_POPUP, (UINT_PTR)hMenuSkins, "Skins");
+
+
+			CheckMenuItem(hMenuSkins, index, MF_BYPOSITION | MF_CHECKED);
 
 			// 3) Использование контекстного меню
 			DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);
@@ -619,4 +640,22 @@ VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[])
 	}
 
 	FreeLibrary(hModule);
+}
+
+VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID)
+{
+	HRSRC hFntRes = FindResource(hFontModule, MAKEINTRESOURCE(resourceID), MAKEINTRESOURCE(RT_FONT));
+	HGLOBAL hFntMem = LoadResource(hFontModule, hFntRes);
+	VOID* fntData = LockResource(hFntMem);
+	DWORD nFonts = 0;
+	DWORD len = SizeofResource(hFontModule, hFntRes);
+	AddFontMemResourceEx(fntData, len, NULL, &nFonts);
+}
+
+VOID LoadFontsFromDLL(HMODULE hFontsModule)
+{
+	for (int i = 2001; i <= 2004; i++)
+	{
+		LoadFontFromDLL(hFontsModule, i);
+	}
 }
