@@ -128,6 +128,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 		LoadFontsFromDLL(hFontsModule);
 
+
 		HFONT hFont = CreateFont
 		(
 			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
@@ -138,7 +139,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			CLIP_CHARACTER_PRECIS,
 			ANTIALIASED_QUALITY,
 			FF_DONTCARE,
-			g_FONT_NAMES[4]
+			g_FONT_NAMES[0]
 		);
 		
 
