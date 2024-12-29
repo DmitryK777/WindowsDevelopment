@@ -46,6 +46,7 @@
 			this.LabelTime.Size = new System.Drawing.Size(118, 51);
 			this.LabelTime.TabIndex = 0;
 			this.LabelTime.Text = "Time";
+			this.LabelTime.DoubleClick += new System.EventHandler(this.LabelTime_DoubleClick);
 			// 
 			// timer
 			// 
@@ -56,7 +57,7 @@
 			// 
 			this.checkBoxShowDate.AutoSize = true;
 			this.checkBoxShowDate.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.checkBoxShowDate.Location = new System.Drawing.Point(31, 219);
+			this.checkBoxShowDate.Location = new System.Drawing.Point(31, 164);
 			this.checkBoxShowDate.Name = "checkBoxShowDate";
 			this.checkBoxShowDate.Size = new System.Drawing.Size(132, 29);
 			this.checkBoxShowDate.TabIndex = 1;
@@ -67,7 +68,7 @@
 			// 
 			this.checkBoxShowWeekDay.AutoSize = true;
 			this.checkBoxShowWeekDay.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.checkBoxShowWeekDay.Location = new System.Drawing.Point(31, 255);
+			this.checkBoxShowWeekDay.Location = new System.Drawing.Point(31, 199);
 			this.checkBoxShowWeekDay.Name = "checkBoxShowWeekDay";
 			this.checkBoxShowWeekDay.Size = new System.Drawing.Size(175, 29);
 			this.checkBoxShowWeekDay.TabIndex = 2;
@@ -77,7 +78,7 @@
 			// buttonHideControls
 			// 
 			this.buttonHideControls.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(204)));
-			this.buttonHideControls.Location = new System.Drawing.Point(31, 334);
+			this.buttonHideControls.Location = new System.Drawing.Point(31, 257);
 			this.buttonHideControls.Name = "buttonHideControls";
 			this.buttonHideControls.Size = new System.Drawing.Size(146, 37);
 			this.buttonHideControls.TabIndex = 3;
@@ -89,13 +90,15 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(800, 450);
+			this.BackColor = System.Drawing.SystemColors.Control;
+			this.ClientSize = new System.Drawing.Size(279, 321);
 			this.Controls.Add(this.buttonHideControls);
 			this.Controls.Add(this.checkBoxShowWeekDay);
 			this.Controls.Add(this.checkBoxShowDate);
 			this.Controls.Add(this.LabelTime);
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
 			this.Text = "Clock VPD_311";
 			this.ResumeLayout(false);
 			this.PerformLayout();
