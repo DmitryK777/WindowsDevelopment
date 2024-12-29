@@ -22,6 +22,7 @@ VOID SetSkin(HWND hwnd, CONST CHAR skin[]);
 VOID SetSkinFromDLL(HWND hwnd, CONST CHAR skin[]);
 VOID LoadFontFromDLL(HMODULE hFontModule, INT resourceID);
 VOID LoadFontsFromDLL(HMODULE hFontsModule);
+VOID SetFont(HWND hwnd, CONST CHAR font_name[]);
 
 INT WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInst, LPSTR lpCmdLine, INT nCmdShow)
 {
@@ -95,6 +96,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
 	static INT index = 0;
 	static HMODULE hFontsModule = NULL;
+	static INT font_index = 0;
 
 	switch (uMsg)
 	{
@@ -115,35 +117,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		
 		
 		hFontsModule = LoadLibrary("Fonts.dll");
-
-		/*
-		HRSRC hFntRes = FindResource(hFontsModule, MAKEINTRESOURCE(2003), MAKEINTRESOURCE(RT_FONT));
-		HGLOBAL hFntMem = LoadResource(hFontsModule, hFntRes);
-		VOID* fntData = LockResource(hFntMem);
-		DWORD nFonts = 0;
-		DWORD len = SizeofResource(hFontsModule, hFntRes);
-		AddFontMemResourceEx(fntData, len, NULL, &nFonts);
-		*/
-		//AddFontResource("Fonts\\MOSCOW2024.otf");
-
 		LoadFontsFromDLL(hFontsModule);
-
-
-		HFONT hFont = CreateFont
-		(
-			g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
-			0, 0,
-			FW_MEDIUM, 0, 0, 0,
-			ANSI_CHARSET,
-			OUT_CHARACTER_PRECIS,
-			CLIP_CHARACTER_PRECIS,
-			ANTIALIASED_QUALITY,
-			FF_DONTCARE,
-			g_FONT_NAMES[0]
-		);
-		
-
-		SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
+		SetFont(hwnd, g_FONT_NAMES[font_index]);
 
 		CHAR sz_digit[2]{};
 		for (int i = 6; i >= 0; i -= 3)
@@ -195,6 +170,8 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		// 3) Установить картинку на кнопку
 		SendMessage(hButton_0, BM_SETIMAGE, IMAGE_BITMAP, (LPARAM)bmpButton_0);
 		*/
+
+		
 
 		CreateWindowEx
 		(
@@ -527,6 +504,7 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
 
 			CheckMenuItem(hMenuSkins, index, MF_BYPOSITION | MF_CHECKED);
+			CheckMenuItem(hMenuFonts, font_index, MF_BYPOSITION | MF_CHECKED);
 
 			// 3) Использование контекстного меню
 			DWORD item = TrackPopupMenu(hMenu, TPM_RETURNCMD | TPM_RIGHTALIGN | TPM_BOTTOMALIGN, LOWORD(lParam), HIWORD(lParam), 0, hwnd, NULL);
@@ -537,6 +515,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 						index = item - IDR_SQUARE_BLUE;
 						break;
 
+					case IDR_TERMINATOR:
+					case IDR_MOSCOW2024:
+					case IDR_DS_DIGITAL:
+					case IDR_DIGITAL_7:
+						font_index = item - IDR_FONTS - 1;
+						break;
+
 					case IDR_EXIT:           SendMessage(hwnd, WM_CLOSE, 0, 0); break;
 				}
 				
@@ -545,10 +530,13 @@ INT CALLBACK WndProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 			SendMessage(hwnd, WM_CTLCOLOREDIT, (WPARAM)hdcDisplay, 0);
 			ReleaseDC(hEditDisplay, hdcDisplay);
 			SetSkinFromDLL(hwnd, g_SKIN[index]);
+			SetFont(hwnd, g_FONT_NAMES[font_index]);
 			SetFocus(hEditDisplay);
 
 
 			// 4) Удаляем меню
+			DestroyMenu(hMenuFonts);
+			DestroyMenu(hMenuSkins);
 			DestroyMenu(hMenu);
 		}
 		break;
@@ -659,4 +647,22 @@ VOID LoadFontsFromDLL(HMODULE hFontsModule)
 	{
 		LoadFontFromDLL(hFontsModule, i);
 	}
+}
+
+VOID SetFont(HWND hwnd, CONST CHAR font_name[])
+{
+	HWND hEdit = GetDlgItem(hwnd, IDC_EDIT_DISPLAY);
+	HFONT hFont = CreateFont
+	(
+		g_i_FONT_HEIGHT, g_i_FONT_WIDTH,
+		0, 0,
+		FW_MEDIUM, 0, 0, 0,
+		ANSI_CHARSET,
+		OUT_CHARACTER_PRECIS,
+		CLIP_CHARACTER_PRECIS,
+		ANTIALIASED_QUALITY,
+		FF_DONTCARE,
+		font_name
+	);
+	SendMessage(hEdit, WM_SETFONT, (WPARAM)hFont, TRUE);
 }
